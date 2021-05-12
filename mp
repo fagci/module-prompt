@@ -38,8 +38,14 @@ class Shell(PromptSession):
         return f'{self.module_name}> '
 
     def on_cmd(self, cmd):
-        if cmd.startswith('use'):
-            _, m = cmd.split(None, 1)
+
+        cmd, *args = cmd.split()
+
+        if cmd in ('q', 'exit', 'quit'):
+            raise EOFError
+
+        if cmd == 'use':
+            m = args[0]
             if self.modules.get(m):
                 c_name = ''.join(p[0].upper()+p[1:] for p in m.split('_'))
                 self.module_name = m
@@ -49,31 +55,31 @@ class Shell(PromptSession):
                 print('No module named', m)
             return
 
-        cmd, *args = cmd.split()
-
         if self.module:
             if hasattr(self.module, cmd):
-                try:
-                    getattr(self.module, cmd)(*args)
-                except Exception as e:
-                    print(e)
+                getattr(self.module, cmd)(*args)
             else:
-                print('O_o')
+                if cmd in ('?', 'help'):
+                    print(help(self.module))
+                else:
+                    print('O_o')
         else:
-            print(cmd)
+            print(cmd, *args)
 
 
     def loop(self):
         while True:
             try:
                 cmd = self.prompt().strip()
+                if cmd:
+                    self.on_cmd(cmd)
             except KeyboardInterrupt:
                 continue
             except EOFError:
                 break
-            else:
-                if cmd:
-                    self.on_cmd(cmd)
+            except Exception as e:
+                print(e)
+
 
 if __name__ == '__main__':
     modules = {}
