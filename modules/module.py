@@ -1,3 +1,6 @@
+# use snake_case for module name
+# and CamelCase for module class
+# with same name as module name
 class Module:
     '''Example module'''
 
@@ -5,5 +8,5 @@ class Module:
         print('Init', self.__class__.__name__)
 
     def test(self, arg=None):
-        '''Makes some test'''
+        '''Available command for module'''
         print('Test', arg)

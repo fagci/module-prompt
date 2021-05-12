@@ -62,6 +62,7 @@ class Shell(PromptSession):
         if cmd == 'use':
             m = args[0]
             if self.modules.get(m):
+                # snake_case to CamelCase
                 c_name = ''.join(p[0].upper()+p[1:] for p in m.split('_'))
                 self.module_name = m
                 self.module = getattr(getattr(__import__(f'modules.{m}'), m), c_name)()
@@ -72,11 +73,9 @@ class Shell(PromptSession):
 
         if self.module:
             if hasattr(self.module, cmd):
-                getattr(self.module, cmd)(*args)
-            else:
-                print('O_o')
-        else:
-            print(cmd, *args)
+                return getattr(self.module, cmd)(*args)
+
+        raise ValueError('No such command')
 
 
     def loop(self):
