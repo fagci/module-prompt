@@ -29,13 +29,15 @@ class MCompleter(Completer):
 class Shell(PromptSession):
     def __init__(self, modules):
         super().__init__(self.message)
+        self.ret = None
         self.modules = modules
         self.module = None
         self.module_name = ''
         self.completer = MCompleter(modules)
 
     def message(self):
-        return f'{self.module_name}> '
+        ret = f'{self.ret} ' if self.ret else ''
+        return f'{ret}{self.module_name}> '
 
     def on_cmd(self, cmd):
 
@@ -82,14 +84,16 @@ class Shell(PromptSession):
         while True:
             try:
                 cmd = self.prompt().strip()
+                self.ret = None
                 if cmd:
-                    self.on_cmd(cmd)
+                    self.ret = self.on_cmd(cmd)
             except KeyboardInterrupt:
                 continue
             except EOFError:
                 break
             except Exception as e:
                 print(e)
+                self.ret = e.errno if hasattr(e, 'errno') else 255
 
 
 if __name__ == '__main__':
