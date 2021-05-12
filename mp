@@ -4,6 +4,7 @@ import pkgutil
 from prompt_toolkit.completion.base import CompleteEvent, Completer, Completion
 from prompt_toolkit.document import Document
 from prompt_toolkit.shortcuts.prompt import PromptSession
+from prompt_toolkit.styles import Style
 
 class MCompleter(Completer):
     def __init__(self, modules, module=None):
@@ -34,10 +35,18 @@ class Shell(PromptSession):
         self.module = None
         self.module_name = ''
         self.completer = MCompleter(modules)
+        self.style = Style.from_dict({
+            'mod': 'red',
+        })
 
     def message(self):
         ret = f'{self.ret} ' if self.ret else ''
-        return f'{ret}{self.module_name}> '
+        mod = f'{self.module_name} ' if self.module_name else ''
+        return [
+            ('class:ret', ret),
+            ('class:mod', mod),
+            ('class:end', '> '),
+        ]
 
     def on_cmd(self, cmd):
 
