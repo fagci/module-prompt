@@ -44,6 +44,21 @@ class Shell(PromptSession):
         if cmd in ('q', 'exit', 'quit'):
             raise EOFError
 
+        if cmd in ('?', 'help'):
+            if self.module:
+                if self.module.__doc__:
+                    print(self.module.__doc__)
+                for f in dir(self.module):
+                    if not f.startswith('_'):
+                        print(f, '--', getattr(self.module, f).__doc__)
+            else:
+                print('Available modules:')
+                for m in self.modules.keys():
+                    print('•', m)
+                print()
+                print('Use module: use <module_name>')
+            return
+
         if cmd == 'use':
             m = args[0]
             if self.modules.get(m):
@@ -59,10 +74,7 @@ class Shell(PromptSession):
             if hasattr(self.module, cmd):
                 getattr(self.module, cmd)(*args)
             else:
-                if cmd in ('?', 'help'):
-                    print(help(self.module))
-                else:
-                    print('O_o')
+                print('O_o')
         else:
             print(cmd, *args)
 
