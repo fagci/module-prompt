@@ -1,7 +1,9 @@
 class Module:
+    '''Example module'''
+
     def __init__(self):
         print('Init', self.__class__)
 
     def test(self, arg):
-        '''Makes test'''
+        '''Makes some test'''
         print('Test', arg)
